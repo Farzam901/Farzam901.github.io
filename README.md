@@ -1,20 +1,13 @@
-# weather-chatbot-api
-
 Weather Dashboard and AI Chatbot
 This project is a weather dashboard that provides real-time weather updates and a 5-day forecast for a specified city. It features a paginated table for displaying forecast data, charts for weather visualization, and an AI-powered chatbot integrated with Google Generative AI (Gemini API) for conversational queries.
 
-Table of Contents
-Features
-Technologies Used
-Project Structure
-Installation
-Usage
-API Integration
-Screenshots
-Future Enhancements
-Features
-Weather Dashboard:
+How to Run:
+simply run the index.html to access the project.
 
+This project is also deployed on github by the url:
+https://farzam901.github.io/
+
+Weather Dashboard:
 Displays current weather data (temperature, humidity, wind speed) and a 5-day forecast using the OpenWeather API.
 Chart.js visualizations (bar, doughnut, and line charts) for a graphical representation of weather trends.
 Sidebar navigation for easy access between dashboard and forecast tables.
@@ -38,25 +31,7 @@ Copy code
 ├── styles.css          # Styling for the dashboard and tables
 ├── script.js           # JavaScript logic for weather fetching and charts
 ├── README.txt          # Project documentation
-Installation
-Clone the repository:
 
-bash
-Copy code
-git clone https://github.com/yourusername/weather-dashboard.git
-Navigate into the project directory:
-
-bash
-Copy code
-cd weather-dashboard
-Install dependencies (if using a package manager for any part of the project):
-
-bash
-Copy code
-npm install
-Update the OpenWeather API key and Google Generative AI API key in the respective places in script.js and tables.html.
-
-Open index.html in your browser to view the weather dashboard.
 
 Usage
 Weather Dashboard:
@@ -66,34 +41,31 @@ The dashboard displays the current weather and a 5-day forecast with graphical c
 Tables:
 
 Navigate to the "Tables" page to view the weather forecast in a tabular format with pagination controls.
-AI Chatbot:
 
+AI Chatbot:
 On the "Tables" page, type any query in the chatbot section. You can ask weather-related questions like:
 "What's the weather in Paris?"
 "Tell me the temperature in New York."
-Charts:
 
+Or even advanced queries such as:
+"What's the weather forecast for Paris in the next 5 days?"
+"Show me the temperature in London for the next 3 days."
+
+"Get me the forecast for New York tomorrow."
+"How will the weather be in Berlin on 2024-10-20?"
+
+Charts:
 View charts (bar, doughnut, line) showing temperature data and weather conditions.
-API Integration
+
+API Integration:
+
 OpenWeather API:
 Used to fetch real-time weather data and a 5-day forecast. You need to register at OpenWeather and obtain an API key.
+
 Google Generative AI (Gemini API):
 Integrated with the chatbot for natural language processing and response generation. Get your API key from Google Cloud.
-Example of how to update the API key:
-In script.js:
 
-javascript
-Copy code
-const weatherApiKey = 'your_openweather_api_key_here';
-In tables.html:
 
-javascript
-Copy code
-const API_KEY = "your_generative_ai_api_key_here";
-Screenshots
-1. Weather Dashboard
-
-2. Forecast Table with AI Chatbot
 
 JavaScript/jQuery Implementation:
 AJAX: Efficient use of the fetch() API for asynchronous requests to the OpenWeather API, retrieving both current weather and forecast data.

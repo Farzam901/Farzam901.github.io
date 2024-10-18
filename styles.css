@@ -1,0 +1,587 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1b1b1b;
+    color: #ecf0f1;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    flex-wrap: wrap;
+    overflow-y: auto;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width:  200px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    overflow-y: auto;
+}
+
+.sidebar .logo {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+}
+
+.sidebar ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+    display: block;
+    padding: 10px 0;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #34495e;
+    transform: scale(1.05);
+}
+.main-content-tables {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #222;
+    border-radius: 10px;
+}
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #222;
+    border-radius: 10px;
+}
+
+.header {
+    display: flex;
+    justify-content: justify;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.temp-unit {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    align-items: center;
+    float: center;
+}
+
+/* Style the select dropdown */
+#tempUnitSelect {
+    background-color: #34495e;
+    cursor: pointer;
+    color: #ffffff;              
+    padding: 7px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+    width: 140px;
+}
+
+/* This will style the options within the dropdown for certain browsers */
+#tempUnitSelect option {
+    background-color: #34495e;
+    color: #ffffff;
+    padding: 7px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+#cityInput {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #bdc3c7;
+    background-color: #333;
+    color: #ecf0f1;
+    transition: background-color 0.3s;
+}
+
+#cityInput:focus {
+    background-color: #444;
+    box-shadow: 0 0 10px #3498db;
+}
+
+#getWeatherBtn {
+    padding: 10px 20px;
+    margin-left: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#getWeatherBtn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+#send-btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#send-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+#nextPage{
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#nextPage:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+#prevPage{
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#prevPage:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+/*Weather Data Section */
+.weather-data {
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    padding: 30px;
+    border-radius: 15px;
+    margin: 20px 0;
+    color: white;
+    text-align: center;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: popIn 0.5s ease-out;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.weather-data:hover {
+    transform: scale(.97);
+    background: linear-gradient(135deg, #1abc9c, #2ecc71);
+    box-shadow: 0 0 25px 15px rgba(52, 152, 219, 0.5);  
+}
+
+/* City Name Styling */
+#cityName {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Weather Description Styling */
+#weatherDescription {
+    font-size: 18px;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* Temperature Value Styling */
+#temperature {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Additional Weather Details */
+.weather-details {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+/* Humidity and Wind Speed Styling */
+.weather-box {
+    background-color: #ffffff;  /* Changed to white for better contrast */
+    color: #2c3e50;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    display: inline-block;
+    width: 45%;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.weather-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.6);  /* Red glow on hover */
+}
+
+/* Adding Icons for Humidity and Wind Speed */
+.weather-box .weather-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+/* New Icon Styles for Humidity */
+#humidityValue::before {
+    content: '\1F4A7'; /* Water drop icon */
+    font-size: 24px;
+    margin-right: 8px;
+    color: #007aff; /* Bright blue for water drop */
+}
+
+/* New Icon Styles for Wind Speed */
+#windSpeedValue::before {
+    content: '\1F32B'; /* Wind gust/puff icon */
+    font-size: 24px;
+    margin-right: 8px;
+    color: #ffffff; /* Orange for wind */
+}
+#temperature::before {
+    content: '\1F321'; /* Thermometer icon */
+    margin-right: 5px; /* Space between icon and text */
+    color: #ff6347; /* Optional: Red color for the icon to make it stand out */
+    font-size: 1.2em; /* Optional: Slightly increase the size of the icon */
+}
+
+#temperature:hover {
+    color: #ff4500; /* Change text and icon color on hover to a deeper red */
+    transition: color 0.3s ease; /* Smooth transition effect */
+}
+
+
+
+/* Text Styling for Values */
+#humidityValue, #windSpeedValue {
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.weather-data p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #555555; /* A softer gray for other text */
+}
+
+
+.profile-icon {
+    position: absolute; /* Position relative to the nearest positioned ancestor */
+    top: 20px; /* Distance from the top */
+    right: 40px; /* Distance from the right */
+    font-size: 24px; /* Adjust the size */
+    color: #333; /* Color of the icon */
+    cursor: pointer; /* Change cursor on hover */
+}
+
+/* Charts Section */
+.charts {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.chart-container {
+    flex: 1 1 300px;
+    margin: 10px;
+    position: relative;
+    animation: pulseGlow 2s infinite;
+    min-width: 20%; 
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+}
+
+.chart-container:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 25px 15px rgba(255, 0, 0, 0.7); /* Red glow effect */
+}
+
+/* Make the canvas responsive */
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.chart-container:hover canvas {
+    transform: scale(1.02);
+}
+
+.table-section {
+    margin: 20px 0;
+    min-width: 80%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #bdc3c7;
+}
+
+table th, table td {
+    border: 1px solid #bdc3c7;
+    padding: 10px;
+    text-align: left;
+    color: #ecf0f1;
+}
+
+table th {
+    background-color: #3498db;
+    color: white;
+    border-bottom: 2px solid #2980b9;
+}
+
+#pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chatbot {
+    margin-top: 20px;
+}
+
+.table-container {
+    width: 50%;
+    float: left;
+}
+
+/* Chatbot Container */
+.chatbot-container {
+    width: 45%;
+    padding: 20px; 
+    min-width: 40%;
+    margin-top: 40px;
+    background-color: #000000;
+    border: 1px solid #1f1f1f;
+    border-radius: 10px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    float: right; 
+}
+
+/* Chat Output Area */
+#chat-output {
+    background-color: #333333;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+
+/* User Input Field */
+#user-input {
+    width: 82%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #bdc3c7;
+    background-color: #444;
+    color: #ecf0f1;
+}
+
+/* Send Button */
+#send-btn {
+    width: 15%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(52, 152, 219, 1);
+    }
+}
+
+
+/* Ensure charts stack vertically on smaller screens */
+@media screen and (max-width: 768px) {
+    .charts {
+        flex-direction: column;
+        align-items: center;
+    }
+    .chart-container {
+        max-width: 100%;
+        margin: 10px 0;
+    }
+
+    canvas {
+        height: 250px !important;
+    }
+
+    .sidebar {
+        width: 100%;
+        text-align: center;
+        height: auto;
+    }
+
+    .main-content {
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    #cityInput {
+        width: 80%;
+        margin-right: 10px;
+    }
+    
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .header {
+        display: flex;             
+        flex-direction: row;   
+        align-items: left;
+    }
+    
+    
+    .table-container {
+        width: 100%;
+        float: none;
+    }
+    
+    .chatbot-container {
+        width: 100%;
+        float: none;
+        margin-top: 20px;
+    }
+}
+/* special ammendments to stack table and chatbot vertically on smaller screens */
+@media screen and (max-width: 1150px) {
+    .main-content-tables {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background-color: #222;
+        border-radius: 10px;
+    }
+
+    .table-container {
+        width: 70%;
+        float: none;
+    }
+
+    .chatbot-container {
+        width: 70%;
+        margin: 10px 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .chart-container {
+        margin: 5px;
+    }
+    
+    canvas {
+        height: 200px !important;
+    }
+    
+    #user-input {
+        width: 70%;
+    }
+    
+    #send-btn {
+        width: 25%;
+    }
+    
+    #chat-output {
+        height: 200px;
+    }
+    
+    .weather-data {
+        padding: 15px;
+    }
+    
+    .weather-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+}
+

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Tables</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "@google/generative-ai": "https://esm.run/@google/generative-ai"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Side Menu -->
+        <div class="sidebar">
+            <div class="logo">Weather App</div>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="tables.html">Tables</a></li>
+            </ul>
+            <!-- Toggle for Celsius and Fahrenheit -->
+            <div class="temp-unit">
+                <label for="tempUnitSelect">Temperature Unit:</label>
+            </div>
+                <select id="tempUnitSelect">
+                    <option value="celsius">Celsius (°C)</option>
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                </select>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content-tables">
+            <!-- Forecast Table Section -->
+            <div class="table-container">
+                <div class="table-section">
+                    <h2>Forecast Table for <span id="cityName">City Name</span></h2>
+                    <table id="weatherTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Temperature</th>
+                                <th>Condition</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    
+                    <div id="pagination">
+                        <button id="prevPage">Previous</button>
+                        <button id="nextPage">Next</button>
+                    </div>
+                </div>     
+            </div>
+            <!-- Chatbot Section -->
+            <div class="chatbot-container">
+                <h2>AI Chatbot</h2>
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button id="send-btn">Send</button>
+                <div id="chat-output"></div>      
+            </div>
+        </div>
+    </div>
+    
+    
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+    
+        const API_KEY = "AIzaSyDqE1Sh1Tx1gj4wkWR22simtWZxHeGP1Nc";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+        const weatherApiKey = 'b58d4385c5306488e79aef856afcb916';
+    
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+    
+        // Add event listener for pressing "Enter" in the input field
+        document.getElementById('user-input').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    
+        const keywords = ['weather', 'temperature', 'forecast', 'next', 'tomorrow'];
+        
+        async function sendMessage() {
+            const userMessage = document.getElementById('user-input').value.trim();
+            if (!userMessage) return;
+    
+            document.getElementById('chat-output').innerHTML += `<div>You: ${userMessage}</div>`;
+            document.getElementById('user-input').value = '';
+    
+            // Identify if the user is asking for current weather, next N days, or a specific day
+            if (isCurrentWeatherRequest(userMessage)) {
+                const city = extractCityFromMessage(userMessage);
+                if (city) {
+                    displayResponse('Fetching current weather for ' + city + '...');
+                    const weatherData = await fetchWeather(city);
+                    displayWeatherResponse(weatherData);
+                } else {
+                    displayResponse('Please specify a city for the current weather.');
+                }
+            } else if (isNextNDaysForecastRequest(userMessage)) {
+                const city = extractCityFromMessage(userMessage);
+                const days = extractDaysFromMessage(userMessage);
+                if (city && days) {
+                    displayResponse(`Fetching temperature for ${city} in the next ${days} days...`);
+                    const forecastData = await fetchForecast(city);
+                    displayTemperatureInNextDaysResponse(forecastData, city, days);
+                } else {
+                    displayResponse('Please specify a city and the number of days for the forecast.');
+                }
+            } else if (isSpecificDayForecastRequest(userMessage)) {
+                const city = extractCityFromMessage(userMessage);
+                const specificDate = extractSpecificDateFromMessage(userMessage);
+                if (city && specificDate) {
+                    displayResponse(`Fetching forecast for ${city} on ${specificDate}...`);
+                    const forecastData = await fetchForecast(city);
+                    displayForecastForSpecificDate(forecastData, specificDate);
+                } else if (city && userMessage.toLowerCase().includes('tomorrow')) {
+                    displayResponse(`Fetching forecast for tomorrow in ${city}...`);
+                    const forecastData = await fetchForecast(city);
+                    displayForecastForTomorrow(forecastData);
+                } else {
+                    displayResponse('Please specify a city and a date or "tomorrow" for the forecast.');
+                }
+            } else {
+                // For non-weather messages, continue with normal AI response
+                displayResponse('AI is thinking...');
+                try {
+                    const result = await model.generateContent(userMessage);
+                    displayResponse(result.response.text());
+                } catch (error) {
+                    console.error('Error generating response:', error);
+                    displayResponse('Sorry, I could not generate a response at this time.');
+                }
+            }
+        }
+    
+        // Helper functions to check message type
+        function isCurrentWeatherRequest(message) {
+            return (message.toLowerCase().includes('temperature') || message.toLowerCase().includes('weather')) &&
+                   !message.toLowerCase().includes('next') && !containsDate(message);
+        }
+    
+        function isNextNDaysForecastRequest(message) {
+            return (message.toLowerCase().includes('forecast') || message.toLowerCase().includes('temperature') || message.toLowerCase().includes('weather')) &&
+                   message.toLowerCase().includes('next') && extractDaysFromMessage(message) !== null;
+        }
+    
+        function isSpecificDayForecastRequest(message) {
+            return (message.toLowerCase().includes('forecast') || message.toLowerCase().includes('temperature') || message.toLowerCase().includes('weather')) &&
+                   (containsDate(message) || message.toLowerCase().includes('tomorrow'));
+        }
+    
+        // Function to extract city name from the user's message
+        function extractCityFromMessage(message) {
+            const words = message.split(' ');
+            return words.find(word => word.length > 2 && !keywords.includes(word.toLowerCase())) || null;
+        }
+    
+        // Function to extract number of days from the user's message
+        function extractDaysFromMessage(message) {
+            const daysPattern = /next\s+(\d+)/; // Matches "next n"
+            const match = message.match(daysPattern);
+            return match ? parseInt(match[1], 10) : null;
+        }
+    
+        // Function to check if message contains a date
+        function containsDate(message) {
+            const datePattern = /\b\d{4}-\d{2}-\d{2}\b/; // Matches YYYY-MM-DD
+            return datePattern.test(message);
+        }
+    
+        // Function to extract specific date from the message
+        function extractSpecificDateFromMessage(message) {
+            const datePattern = /\b\d{4}-\d{2}-\d{2}\b/; // Matches YYYY-MM-DD
+            const match = message.match(datePattern);
+            return match ? match[0] : null;
+        }
+    
+        // Fetch weather data using OpenWeather API
+        async function fetchWeather(city) {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+                return null;
+            }
+        }
+    
+        // Fetch forecast data using OpenWeather API
+        async function fetchForecast(city) {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${weatherApiKey}&units=metric`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching forecast:', error);
+                return null;
+            }
+        }
+    
+        // Function to display the current weather response
+        function displayWeatherResponse(data) {
+            const chatOutput = document.getElementById('chat-output');
+            if (data && data.main) {
+                const weatherMessage = `Current temperature in ${data.name} is ${data.main.temp} °C with ${data.weather[0].description}.`;
+                chatOutput.innerHTML += `<div>AI: ${weatherMessage}</div>`;
+            } else {
+                chatOutput.innerHTML += `<div>AI: Sorry, I couldn't find the weather information.</div>`;
+            }
+        }
+    
+        // Function to display the forecast for the next N days
+        function displayTemperatureInNextDaysResponse(data, city, days) {
+            const chatOutput = document.getElementById('chat-output');
+            if (data && data.list) {
+                chatOutput.innerHTML += `<div>AI: The temperature for ${city} in the next ${days} days is as follows:</div>`;
+                const today = new Date();
+                for (let i = 1; i <= days; i++) {
+                    const forecastDate = new Date();
+                    forecastDate.setDate(today.getDate() + i);
+                    const formattedDate = forecastDate.toISOString().split('T')[0];
+    
+                    // Find matching entries in the forecast data
+                    const entry = data.list.find(item => item.dt_txt.startsWith(formattedDate));
+                    if (entry) {
+                        const message = `On ${formattedDate}, the temperature will be ${entry.main.temp} °C with ${entry.weather[0].description}.`;
+                        chatOutput.innerHTML += `<div>AI: ${message}</div>`;
+                    }
+                }
+            } else {
+                chatOutput.innerHTML += `<div>AI: Sorry, I couldn't find the forecast information.</div>`;
+            }
+        }
+    
+        // Function to display the forecast for a specific date
+        function displayForecastForSpecificDate(data, date) {
+            const chatOutput = document.getElementById('chat-output');
+            if (data && data.list) {
+                const entry = data.list.find(item => item.dt_txt.startsWith(date));
+                if (entry) {
+                    const message = `On ${date}, the temperature will be ${entry.main.temp} °C with ${entry.weather[0].description}.`;
+                    chatOutput.innerHTML += `<div>AI: ${message}</div>`;
+                } else {
+                    chatOutput.innerHTML += `<div>AI: Sorry, I couldn't find forecast information for ${date}.</div>`;
+                }
+            }
+        }
+    
+        // Function to display the forecast for tomorrow
+        function displayForecastForTomorrow(data) {
+            const chatOutput = document.getElementById('chat-output');
+            if (data && data.list) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const formattedDate = tomorrow.toISOString().split('T')[0];
+    
+                const entry = data.list.find(item => item.dt_txt.startsWith(formattedDate));
+                if (entry) {
+                    const message = `Tomorrow's temperature will be ${entry.main.temp} °C with ${entry.weather[0].description}.`;
+                    chatOutput.innerHTML += `<div>AI: ${message}</div>`;
+                } else {
+                    chatOutput.innerHTML += `<div>AI: Sorry, I couldn't find forecast information for tomorrow.</div>`;
+                }
+            }
+        }
+    
+        // Helper function to display the response in the chat
+        function displayResponse(message) {
+            const chatOutput = document.getElementById('chat-output');
+            chatOutput.innerHTML += `<div>AI: ${message}</div>`;
+        }
+    </script>
+    
+    
+    <script src="script.js"></script>
+</body>
+</html>
